@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeeIt - Cinematic Movies, TV Series & Live Channels</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            cyan: '#00F0FF',
+                            cyanHover: '#00D6E6',
+                            redLive: '#FF0055',
+                            darkBg: '#050811',
+                            cardBg: '#0E1422',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050811;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050811;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00F0FF;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(14, 20, 34, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-nav-scrolled {
+            background: rgba(5, 8, 17, 0.92) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Slide Transition Effect */
+        .slide-bg {
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide-bg.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .slide-bg.inactive {
+            opacity: 0;
+            transform: scale(1.08);
+        }
+
+        /* Accordion Expansion Rules */
+        .accordion-card {
+            transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .accordion-card.expanded {
+            flex: 3.8;
+            border-color: #00F0FF;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+        }
+
+        .accordion-card.collapsed {
+            flex: 1;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .accordion-card.collapsed .expanded-content {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .accordion-card.expanded .expanded-content {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+        }
+
+        .accordion-card.collapsed .collapsed-content {
+            opacity: 1;
+            transition: opacity 0.3s ease 0.2s;
+        }
+
+        .accordion-card.expanded .collapsed-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-cyan selection:text-black">
+
+    <!-- Navigation Bar -->
+    <header id="main-nav" class="fixed top-0 left-0 right-0 z-50 px-6 lg:px-16 py-5 flex items-center justify-between transition-all duration-300 bg-transparent">
+        <div class="flex items-center gap-10">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-9 h-9 rounded-xl bg-brand-cyan flex items-center justify-center font-black text-black text-xl tracking-tighter group-hover:scale-105 transition shadow-lg shadow-brand-cyan/30">
+                    S
+                </div>
+                <span class="text-2xl font-black tracking-wider text-white">SEE<span class="text-brand-cyan">IT</span></span>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-7 text-xs font-bold uppercase tracking-wider text-slate-300">
+                <a href="#home" class="hover:text-brand-cyan transition">Home</a>
+                <a href="#movies" class="hover:text-brand-cyan transition">Movies</a>
+                <a href="#series" class="hover:text-brand-cyan transition">TV Series</a>
+                <a href="#live-tv" class="hover:text-brand-cyan transition flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-brand-redLive animate-pulse"></span>
+                    Live Channels
+                </a>
+                <a href="#categories" class="hover:text-brand-cyan transition">Genres</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="relative hidden sm:block">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" placeholder="Search title, live channel, genre..." class="bg-slate-900/60 backdrop-blur-md border border-white/20 rounded-full pl-10 pr-4 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-cyan w-48 focus:w-64 transition-all">
+            </div>
+            
+            <button class="bg-brand-cyan text-black px-5 py-2 rounded-full font-extrabold text-xs tracking-wider uppercase hover:bg-brand-cyanHover transition-all shadow-lg shadow-brand-cyan/20">
+                Sign In
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section id="home" class="relative w-full h-screen min-h-[680px] flex items-center justify-between px-6 lg:px-16 overflow-hidden pt-20">
+            
+            <!-- Hero Slide Backdrops -->
+            <div id="hero-bg-container" class="absolute inset-0 z-0">
+                <!-- Background images injected via JS -->
+            </div>
+
+            <!-- Dark Vignette Overlays -->
+            <div class="absolute inset-0 bg-gradient-to-r from-[#050811] via-[#050811]/70 to-transparent z-10"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#050811] via-transparent to-[#050811]/50 z-10"></div>
+
+            <!-- Left Hero Content -->
+            <div class="relative z-20 max-w-2xl space-y-6 pt-8">
+                <div class="inline-flex items-center gap-2 bg-brand-cyan/10 border border-brand-cyan/30 px-3.5 py-1.5 rounded-full text-brand-cyan text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span> GOLDEN GLOBE NOMINEE
+                </div>
+
+                <h1 id="hero-title" class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase leading-none drop-shadow-2xl">
+                    BLADE OF THE RONIN
+                </h1>
+
+                <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-300">
+                    <span id="hero-rating" class="bg-amber-400 text-black px-2.5 py-1 rounded font-black shadow-md">★ 9.0 IMDB</span>
+                    <span id="hero-quality" class="bg-white/10 backdrop-blur-md border border-white/20 px-2.5 py-1 rounded">2h 18m · 4K ULTRA HD</span>
+                    <span id="hero-genre" class="text-brand-cyan font-semibold">Martial Arts Fantasy · Movie</span>
+                </div>
+
+                <p id="hero-desc" class="text-slate-300 text-sm md:text-base leading-relaxed line-clamp-3 max-w-xl">
+                    A masterless warrior embarks on a treacherous pilgrimage across feudal lands to avenge his fallen clan and retrieve an ancient enchanted Katana.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <button id="hero-trailer-btn" class="bg-brand-cyan hover:bg-brand-cyanHover text-black px-7 py-3.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2.5 transition-all shadow-xl shadow-brand-cyan/30 transform hover:-translate-y-0.5 active:translate-y-0">
+                        <i data-lucide="play" class="w-4 h-4 fill-black"></i> Watch Trailer
+                    </button>
+                    <a href="#movies" class="bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700/80 px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
+                        <i data-lucide="film" class="w-4 h-4 text-brand-cyan"></i> Explore Catalog
+                    </a>
+                </div>
+            </div>
+
+            <!-- Vertical Pagination Slider (Right side - Clean & Minimal) -->
+            <div class="relative z-20 flex flex-col items-center gap-5 my-auto pl-4">
+                <span id="current-slide-num" class="text-xs font-black text-brand-cyan tracking-widest">01</span>
+                
+                <div class="relative w-1 h-36 bg-slate-800/80 backdrop-blur-md rounded-full overflow-hidden">
+                    <div id="slide-progress" class="absolute top-0 w-full bg-brand-cyan rounded-full transition-all duration-500" style="height: 16.66%;"></div>
+                </div>
+
+                <span id="total-slide-num" class="text-xs font-black text-slate-500">06</span>
+                
+                <div class="flex flex-col gap-2 pt-1">
+                    <button id="slide-prev-btn" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition hover:scale-110">
+                        <i data-lucide="chevron-up" class="w-4 h-4"></i>
+                    </button>
+                    <button id="slide-next-btn" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition hover:scale-110">
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider">Explore Genres</h2>
+                    <p class="text-xs text-slate-400 mt-1">Discover curated collections tailored to your taste</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                <div class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="Action">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">1,240+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">Action & Sci-Fi</h3>
+                    </div>
+                </div>
+
+                <div class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="Cyberpunk">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">850+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">Cyberpunk</h3>
+                    </div>
+                </div>
+
+                <div class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="Space">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">620+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">Space Odyssey</h3>
+                    </div>
+                </div>
+
+                <div class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="Drama">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">940+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">Thriller & Mystery</h3>
+                    </div>
+                </div>
+
+                <div class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="Animation">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">1,100+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">Anime & Art</h3>
+                    </div>
+                </div>
+
+                <div class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan transition duration-300">
+                    <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="Fantasy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">780+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">Dark Fantasy</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Movies Section -->
+        <section id="movies" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="film" class="w-6 h-6 text-brand-cyan"></i> Feature Movies
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Hover over any title to open details & preview options</p>
+                </div>
+            </div>
+
+            <!-- Movies Expanding Flex Accordion Container -->
+            <div id="movies-accordion" class="flex flex-col lg:flex-row gap-4 h-[440px] w-full">
+                <!-- Movie Accordion Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- TV Series Section -->
+        <section id="series" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="tv" class="w-6 h-6 text-brand-cyan"></i> Trending TV Series
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Binge-worthy original sagas with expanding detailed cards</p>
+                </div>
+            </div>
+
+            <!-- Series Expanding Flex Accordion Container -->
+            <div id="series-accordion" class="flex flex-col lg:flex-row gap-4 h-[440px] w-full">
+                <!-- Series Accordion Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Live TV Channels & TV Shows Section -->
+        <section id="live-tv" class="px-6 lg:px-16 py-12 border-t border-white/10 bg-gradient-to-b from-transparent via-[#080d1a]/50 to-transparent">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-brand-redLive/10 border border-brand-redLive/30 text-brand-redLive px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-2">
+                        <span class="w-2 h-2 rounded-full bg-brand-redLive animate-pulse"></span> 24/7 Live Broadcast
+                    </div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="radio" class="w-6 h-6 text-brand-redLive"></i> Live TV Channels & Shows
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Stream premium live television channels, news, and entertainment directly inside SeeIt</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400 font-bold uppercase"><i data-lucide="users" class="w-3.5 h-3.5 inline text-brand-cyan"></i> 142.8K Watching Live</span>
+                </div>
+            </div>
+
+            <!-- In-Platform Embedded Live TV Player Showcase -->
+            <div class="glass-card rounded-2xl overflow-hidden p-6 mb-8 border border-white/10">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    <!-- Stream Video Player Container -->
+                    <div class="lg:col-span-2 relative aspect-video bg-black rounded-xl overflow-hidden border border-white/10 group">
+                        <iframe id="live-stream-player" class="w-full h-full" src="https://www.youtube.com/embed/21X5lGlDOfg?autoplay=0" title="Live Stream" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        
+                        <div class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+                            <span class="w-2.5 h-2.5 rounded-full bg-brand-redLive animate-ping"></span>
+                            <span class="text-xs font-black text-white uppercase tracking-wider" id="active-channel-name">MBC 1 HD</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Channel Guide & Details -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan text-[10px] font-black px-2 py-0.5 rounded uppercase" id="active-channel-badge">ENTERTAINMENT & DRAMA</span>
+                                <h3 class="text-2xl font-black text-white mt-1 uppercase" id="active-show-title">ARABS GOT TALENT - SEASON 7</h3>
+                                <p class="text-xs text-slate-400 mt-1" id="active-show-desc">Live performance episode featuring top vocalists, illusionists, and dancers competing for the grand championship title.</p>
+                            </div>
+                        </div>
+
+                        <!-- Time & Broadcast Bar -->
+                        <div class="space-y-1.5 bg-slate-900/80 p-3 rounded-xl border border-white/5">
+                            <div class="flex justify-between text-xs text-slate-300 font-bold">
+                                <span>NOW AIRING: <span class="text-white" id="active-program-name">EPISODE 8 - LIVE AUDITIONS</span></span>
+                                <span class="text-brand-redLive">42m LEFT</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-brand-redLive h-full rounded-full" style="width: 65%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Channel Stats -->
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Resolution</span>
+                                <span class="text-white font-extrabold">1080p Full HD</span>
+                            </div>
+                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Audio Language</span>
+                                <span class="text-white font-extrabold">Arabic / English</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Channels Cards Carousel / Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="channels-grid">
+                <!-- Channel Cards Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Coming Soon / New Releases -->
+        <section id="coming-soon" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                    <i data-lucide="sparkles" class="w-6 h-6 text-brand-cyan"></i> Coming Soon / New Releases
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Upcoming blockbusters heading to SeeIt streaming platform</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-5 rounded-2xl flex gap-4 items-center group">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&auto=format&fit=crop" class="w-28 h-36 object-cover rounded-xl group-hover:scale-105 transition duration-300" alt="Avatar">
+                    <div class="space-y-2">
+                        <span class="bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">DECEMBER 2026</span>
+                        <h3 class="font-extrabold text-white text-base">AVATAR: FIRE & ASH</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">The saga continues on Pandora introducing the volcanic ash clan.</p>
+                        <button onclick="toggleRemind(this)" class="mt-2 text-xs text-brand-cyan font-bold flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-brand-cyan transition">
+                            <i data-lucide="bell" class="w-3.5 h-3.5"></i> <span>Remind Me</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl flex gap-4 items-center group">
+                    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400&auto=format&fit=crop" class="w-28 h-36 object-cover rounded-xl group-hover:scale-105 transition duration-300" alt="Cyberpunk">
+                    <div class="space-y-2">
+                        <span class="bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">NOVEMBER 2026</span>
+                        <h3 class="font-extrabold text-white text-base">CYBERPUNK: EDGERUNNERS 2</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">Return to Night City for an all-new cybernetic revolution saga.</p>
+                        <button onclick="toggleRemind(this)" class="mt-2 text-xs text-brand-cyan font-bold flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-brand-cyan transition">
+                            <i data-lucide="bell" class="w-3.5 h-3.5"></i> <span>Remind Me</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl flex gap-4 items-center group">
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=400&auto=format&fit=crop" class="w-28 h-36 object-cover rounded-xl group-hover:scale-105 transition duration-300" alt="Gladiator">
+                    <div class="space-y-2">
+                        <span class="bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">OCTOBER 2026</span>
+                        <h3 class="font-extrabold text-white text-base">GLADIATOR II</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">Years after Maximus's death, Lucius steps into the Colosseum arena.</p>
+                        <button onclick="toggleRemind(this)" class="mt-2 text-xs text-brand-cyan font-bold flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-brand-cyan transition">
+                            <i data-lucide="bell" class="w-3.5 h-3.5"></i> <span>Remind Me</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Video Trailer -->
+    <div id="trailer-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md hidden p-4">
+        <div class="relative w-full max-w-4xl bg-slate-900 rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950">
+                <h3 id="trailer-modal-title" class="text-sm font-black text-white uppercase tracking-wider">Movie Trailer</h3>
+                <button onclick="closeTrailerModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-brand-cyan hover:text-black text-white flex items-center justify-center transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="relative aspect-video w-full bg-black">
+                <iframe id="trailer-iframe" class="w-full h-full" src="" title="Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-[#050811] px-6 lg:px-16 py-8 text-center text-xs text-slate-500">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 max-w-7xl mx-auto">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-brand-cyan flex items-center justify-center font-black text-black text-xs">S</div>
+                <span class="text-sm font-black text-white">SEE<span class="text-brand-cyan">IT</span></span>
+            </div>
+            <p>© 2026 SeeIt Streaming Platform. All rights reserved.</p>
+            <div class="flex gap-4 text-slate-400 font-medium">
+                <a href="#" class="hover:text-brand-cyan transition">Privacy Policy</a>
+                <a href="#" class="hover:text-brand-cyan transition">Terms of Service</a>
+                <a href="#" class="hover:text-brand-cyan transition">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const heroSlides = [
+            {
+                title: "BLADE OF THE RONIN",
+                rating: "★ 9.0 IMDB",
+                quality: "2h 18m · 4K ULTRA HD",
+                genre: "Martial Arts Fantasy · Movie",
+                desc: "A masterless warrior embarks on a treacherous pilgrimage across feudal lands to avenge his fallen clan and retrieve an ancient enchanted Katana.",
+                image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1920&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/w7pYhpJaC7E"
+            },
+            {
+                title: "CHRONICLES OF ARRAKIS",
+                rating: "★ 8.8 IMDB",
+                quality: "2h 45m · 4K ULTRA HD",
+                genre: "Sci-Fi • Adventure",
+                desc: "A mythical journey of a hero bound to fulfill a destiny beyond his comprehension, fighting across desert sands and planetary factions.",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/Way9Dexny3w"
+            },
+            {
+                title: "CYBER SAGA 2099",
+                rating: "★ 8.7 IMDB",
+                quality: "1h 58m · 4K HDR10+",
+                genre: "Cyberpunk • Action",
+                desc: "In a neon-drenched metropolis controlled by rogue mega-corporations, a mercenary seeking freedom unlocks a deadly secret.",
+                image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1920&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/gCcx85zbxz4"
+            },
+            {
+                title: "SHADOW OF THE DRAGON",
+                rating: "★ 9.0 IMDB",
+                quality: "2h 30m · 4K IMAX",
+                genre: "Fantasy • Drama",
+                desc: "An ancient kingdom faces destruction as dragons return to reclaim their lost dominion over mountain realms.",
+                image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1920&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/Way9Dexny3w"
+            },
+            {
+                title: "BEYOND THE HORIZON",
+                rating: "★ 8.9 IMDB",
+                quality: "2h 40m · DOLBY VISION",
+                genre: "Space • Mystery",
+                desc: "Explorers venture into an uncharted wormhole to find a new sanctuary for humanity before time runs out.",
+                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/zSWdZVtXT7E"
+            },
+            {
+                title: "THE LAST SYNDICATE",
+                rating: "★ 8.5 IMDB",
+                quality: "2h 12m · 4K ULTRA HD",
+                genre: "Crime • Thriller",
+                desc: "An undercover detective infiltrates an elite global syndicate only to find corrupt forces running the highest ranks.",
+                image: "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=1920&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/xEQP4VVuyrY"
+            }
+        ];
+
+        const liveChannelsData = [
+            {
+                id: "ch1",
+                name: "MBC 1 HD",
+                logo: "MBC 1",
+                category: "ENTERTAINMENT & DRAMA",
+                show: "ARABS GOT TALENT",
+                desc: "Live performance episode featuring top vocalists, illusionists, and dancers competing for the grand championship title.",
+                viewers: "48.2K",
+                streamUrl: "https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1",
+                bgImg: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                id: "ch2",
+                name: "MBC DRAMA",
+                logo: "MBC DRAMA",
+                category: "ARABIC DRAMA & SERIES",
+                show: "VALLEY OF SECRETS - EP 24",
+                desc: "High stakes suspense as the family empire faces internal betrayal during prime evening broadcast.",
+                viewers: "35.6K",
+                streamUrl: "https://www.youtube.com/embed/fXmAurh072s?autoplay=1",
+                bgImg: "https://images.unsplash.com/photo-1528164344705-47542687990d?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                id: "ch3",
+                name: "NAT GEO WILD",
+                logo: "NAT GEO",
+                category: "SCIENCE & WILDLIFE",
+                show: "PREDATORS OF THE SERENGETI",
+                desc: "High-definition wildlife exploration following big cats during their annual migration trek.",
+                viewers: "22.9K",
+                streamUrl: "https://www.youtube.com/embed/Way9Dexny3w?autoplay=1",
+                bgImg: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef9?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                id: "ch4",
+                name: "beIN ACTION HD",
+                logo: "beIN ACTION",
+                category: "BLOCKBUSTER PREMIERES",
+                show: "MAD MAX: FURY ROAD - LIVE",
+                desc: "Non-stop apocalyptic highway chase through desolate wasteland realms in 4K resolution.",
+                viewers: "29.4K",
+                streamUrl: "https://www.youtube.com/embed/gCcx85zbxz4?autoplay=1",
+                bgImg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
+            },
+            {
+                id: "ch5",
+                name: "DISCOVERY LIVE",
+                logo: "DISCOVERY",
+                category: "EXPEDITIONS & DOCS",
+                show: "MYTHBUSTERS CLASSIC",
+                desc: "Scientific experiments testing high-velocity urban legends with explosive laboratory trials.",
+                viewers: "18.1K",
+                streamUrl: "https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1",
+                bgImg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop"
+            }
+        ];
+
+        const moviesAccordionData = [
+            {
+                id: "m1",
+                badge: "SCI-FI BLOCKBUSTER",
+                quality: "4K UHD",
+                title: "ALITA: BATTLE ANGEL",
+                rating: "8.5",
+                stars: "★★★★☆",
+                year: "2019",
+                duration: "2h 02m",
+                desc: "A deactivated cyborg is revived, but cannot remember anything of her past and sets out on a quest to discover who she is.",
+                image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/w7pYhpJaC7E"
+            },
+            {
+                id: "m2",
+                badge: "BEST DIRECTOR",
+                quality: "4K UHD",
+                title: "ROMA",
+                rating: "8.0",
+                stars: "★★★★☆",
+                year: "2018",
+                duration: "2h 15m",
+                desc: "A year in the life of a middle-class family's maid in Mexico City in the early 1970s.",
+                image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/6BS27ngZlxg"
+            },
+            {
+                id: "m3",
+                badge: "ACADEMY WINNER",
+                quality: "4K HDR",
+                title: "GREEN BOOK",
+                rating: "8.9",
+                stars: "★★★★★",
+                year: "2018",
+                duration: "2h 10m",
+                desc: "A working-class Italian-American bouncer becomes the driver of an African-American classical pianist on a tour through the 1960s American South.",
+                image: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/QkZxoko_hc0"
+            },
+            {
+                id: "m4",
+                badge: "MUSICAL EPIC",
+                quality: "DOLBY VISION",
+                title: "BOHEMIAN RHAPSODY",
+                rating: "8.6",
+                stars: "★★★★★",
+                year: "2018",
+                duration: "2h 14m",
+                desc: "The story of the legendary British rock band Queen and lead singer Freddie Mercury, leading up to their iconic performance at Live Aid.",
+                image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/mP0VHJVP0W8"
+            },
+            {
+                id: "m5",
+                badge: "EPIC SEQUEL",
+                quality: "IMAX 4K",
+                title: "DUNE: PART TWO",
+                rating: "8.8",
+                stars: "★★★★★",
+                year: "2024",
+                duration: "2h 46m",
+                desc: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/Way9Dexny3w"
+            }
+        ];
+
+        const seriesAccordionData = [
+            {
+                id: "s1",
+                badge: "TOP ANIMATED SERIES",
+                quality: "4K HDR",
+                title: "ARCANE",
+                rating: "9.0",
+                stars: "★★★★★",
+                year: "2021",
+                duration: "2 Seasons",
+                desc: "Set in the utopian region of Piltover and the oppressed underground of Zaun, the story follows the origins of two iconic League champions.",
+                image: "https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/fXmAurh072s"
+            },
+            {
+                id: "s2",
+                badge: "FEUDAL JAPAN DRAMA",
+                quality: "DOLBY VISION",
+                title: "SHŌGUN",
+                rating: "8.9",
+                stars: "★★★★★",
+                year: "2024",
+                duration: "1 Season",
+                desc: "When a mysterious European ship is found marooned in a nearby fishing village, Lord Yoshii Toranaga discovers secrets that could tip the scales of power.",
+                image: "https://images.unsplash.com/photo-1528164344705-47542687990d?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/yAN5uspO_hk"
+            },
+            {
+                id: "s3",
+                badge: "CYBERPUNK ANIME",
+                quality: "4K UHD",
+                title: "CYBERPUNK: EDGERUNNERS",
+                rating: "8.3",
+                stars: "★★★★☆",
+                year: "2022",
+                duration: "1 Season",
+                desc: "A street kid trying to survive in a technology and body modification-obsessed city of the future stays alive by becoming an edgerunner.",
+                image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/JtqIas3bYhg"
+            },
+            {
+                id: "s4",
+                badge: "GLOBAL PHENOMENON",
+                quality: "4K HDR",
+                title: "STRANGER THINGS",
+                rating: "8.7",
+                stars: "★★★★★",
+                year: "2016",
+                duration: "4 Seasons",
+                desc: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.",
+                image: "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=800&auto=format&fit=crop",
+                trailer: "https://www.youtube.com/embed/b9EkMc79ZSU"
+            }
+        ];
+
+        let currentSlide = 0;
+        let slideInterval = null;
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            if (window.scrollY > 40) {
+                nav.classList.add('glass-nav-scrolled');
+                nav.classList.remove('bg-transparent', 'py-5');
+                nav.classList.add('py-3');
+            } else {
+                nav.classList.remove('glass-nav-scrolled');
+                nav.classList.add('bg-transparent', 'py-5');
+                nav.classList.remove('py-3');
+            }
+        });
+
+        function initHeroSlides() {
+            const container = document.getElementById('hero-bg-container');
+            container.innerHTML = heroSlides.map((slide, idx) => `
+                <div class="slide-bg absolute inset-0 ${idx === 0 ? 'active' : 'inactive'}" id="bg-slide-${idx}">
+                    <img src="${slide.image}" class="w-full h-full object-cover filter brightness-90" alt="${slide.title}">
+                </div>
+            `).join('');
+            
+            updateSlideUI();
+            startAutoSlide();
+        }
+
+        function updateSlideUI() {
+            heroSlides.forEach((_, idx) => {
+                const el = document.getElementById(`bg-slide-${idx}`);
+                if (el) {
+                    if (idx === currentSlide) {
+                        el.classList.remove('inactive');
+                        el.classList.add('active');
+                    } else {
+                        el.classList.remove('active');
+                        el.classList.add('inactive');
+                    }
+                }
+            });
+
+            const slide = heroSlides[currentSlide];
+            document.getElementById('hero-title').innerText = slide.title;
+            document.getElementById('hero-rating').innerText = slide.rating;
+            document.getElementById('hero-quality').innerText = slide.quality;
+            document.getElementById('hero-genre').innerText = slide.genre;
+            document.getElementById('hero-desc').innerText = slide.desc;
+            
+            document.getElementById('current-slide-num').innerText = `0${currentSlide + 1}`;
+            
+            const progressPct = ((currentSlide + 1) / heroSlides.length) * 100;
+            document.getElementById('slide-progress').style.height = `${progressPct}%`;
+
+            document.getElementById('hero-trailer-btn').onclick = () => openTrailerModal(slide.title, slide.trailer);
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % heroSlides.length;
+            updateSlideUI();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length;
+            updateSlideUI();
+        }
+
+        function startAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 6000);
+        }
+
+        function renderLiveChannels() {
+            const container = document.getElementById('channels-grid');
+            container.innerHTML = liveChannelsData.map((ch, idx) => `
+                <div onclick="switchLiveChannel('${ch.id}')" class="glass-card rounded-2xl overflow-hidden p-4 cursor-pointer hover:border-brand-cyan transition duration-300 group flex flex-col justify-between ${idx === 0 ? 'border-brand-cyan shadow-lg shadow-brand-cyan/20' : ''}" id="channel-card-${ch.id}">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black text-white bg-slate-900 border border-white/10 px-2.5 py-1 rounded-lg">${ch.logo}</span>
+                            <span class="flex items-center gap-1 text-[10px] font-black text-brand-redLive bg-brand-redLive/10 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-redLive animate-pulse"></span> LIVE
+                            </span>
+                        </div>
+                        <h4 class="font-extrabold text-white text-sm group-hover:text-brand-cyan transition">${ch.name}</h4>
+                        <p class="text-xs text-slate-300 line-clamp-1 font-bold">${ch.show}</p>
+                    </div>
+
+                    <div class="pt-4 flex items-center justify-between text-[11px] text-slate-400 border-t border-white/5 mt-3">
+                        <span><i data-lucide="eye" class="w-3 h-3 inline text-brand-cyan"></i> ${ch.viewers}</span>
+                        <span class="text-brand-cyan font-bold uppercase group-hover:underline">Tune In →</span>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function switchLiveChannel(chId) {
+            const ch = liveChannelsData.find(c => c.id === chId);
+            if (!ch) return;
+
+            document.getElementById('active-channel-name').innerText = ch.name;
+            document.getElementById('active-channel-badge').innerText = ch.category;
+            document.getElementById('active-show-title').innerText = ch.show;
+            document.getElementById('active-show-desc').innerText = ch.desc;
+            document.getElementById('active-program-name').innerText = ch.show;
+            document.getElementById('live-stream-player').src = ch.streamUrl;
+
+            // Highlight border
+            liveChannelsData.forEach(c => {
+                const card = document.getElementById(`channel-card-${c.id}`);
+                if (card) {
+                    if (c.id === chId) {
+                        card.classList.add('border-brand-cyan', 'shadow-lg', 'shadow-brand-cyan/20');
+                    } else {
+                        card.classList.remove('border-brand-cyan', 'shadow-lg', 'shadow-brand-cyan/20');
+                    }
+                }
+            });
+        }
+
+        function renderAccordion(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = items.map((item, index) => {
+                const isExpanded = index === 0;
+                return `
+                    <div id="card-${item.id}" 
+                         class="accordion-card ${isExpanded ? 'expanded' : 'collapsed'} relative rounded-2xl overflow-hidden cursor-pointer group bg-slate-900/80"
+                         onmouseenter="handleAccordionHover('${containerId}', '${item.id}')"
+                         onclick="openTrailerModal('${item.title}', '${item.trailer}')">
+                        
+                        <img src="${item.image}" class="absolute inset-0 w-full h-full object-cover brightness-75 group-hover:scale-105 transition duration-700" alt="${item.title}">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
+
+                        <div class="collapsed-content absolute bottom-6 left-6 right-6 flex flex-col justify-end">
+                            <span class="text-xs font-black text-amber-400 mb-1 flex items-center gap-1">
+                                ${item.rating} <span class="text-[10px] text-amber-400">${item.stars}</span>
+                            </span>
+                            <h3 class="font-black text-white text-sm uppercase truncate tracking-wider">${item.title}</h3>
+                        </div>
+
+                        <div class="expanded-content absolute inset-0 p-6 flex flex-col justify-between z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-brand-cyan text-black px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-md shadow-brand-cyan/20">
+                                    <i data-lucide="award" class="w-3 h-3"></i> ${item.badge}
+                                </span>
+                                <span class="bg-black/70 border border-white/20 text-slate-200 px-2 py-1 rounded text-[10px] font-extrabold uppercase">
+                                    ${item.quality}
+                                </span>
+                            </div>
+
+                            <div class="space-y-3 max-w-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl font-black text-white">${item.rating}</span>
+                                    <span class="text-amber-400 text-sm tracking-widest">${item.stars}</span>
+                                </div>
+
+                                <h3 class="text-2xl lg:text-3xl font-black text-white uppercase tracking-tight leading-none">${item.title}</h3>
+
+                                <div class="text-xs font-bold text-brand-cyan">
+                                    <span>${item.year}</span> • <span>${item.duration}</span>
+                                </div>
+
+                                <p class="text-xs text-slate-300 leading-relaxed line-clamp-2">
+                                    ${item.desc}
+                                </p>
+
+                                <div class="flex items-center gap-3 pt-2">
+                                    <button class="bg-brand-cyan hover:bg-brand-cyanHover text-black px-5 py-2.5 rounded-lg font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-brand-cyan/20 transition">
+                                        <i data-lucide="play" class="w-3.5 h-3.5 fill-black"></i> WATCH TRAILER
+                                    </button>
+                                    <button onclick="event.stopPropagation(); toggleWatchlistIcon(this)" class="w-9 h-9 rounded-lg bg-slate-900/80 border border-white/20 hover:border-brand-cyan text-white flex items-center justify-center transition">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function handleAccordionHover(containerId, activeCardId) {
+            const container = document.getElementById(containerId);
+            const cards = container.querySelectorAll('.accordion-card');
+            
+            cards.forEach(card => {
+                if (card.id === `card-${activeCardId}`) {
+                    card.classList.remove('collapsed');
+                    card.classList.add('expanded');
+                } else {
+                    card.classList.remove('expanded');
+                    card.classList.add('collapsed');
+                }
+            });
+        }
+
+        function toggleWatchlistIcon(btn) {
+            if (btn.classList.contains('bg-brand-cyan')) {
+                btn.className = "w-9 h-9 rounded-lg bg-slate-900/80 border border-white/20 hover:border-brand-cyan text-white flex items-center justify-center transition";
+                btn.innerHTML = `<i data-lucide="plus" class="w-4 h-4"></i>`;
+            } else {
+                btn.className = "w-9 h-9 rounded-lg bg-brand-cyan text-black flex items-center justify-center transition shadow-md shadow-brand-cyan/30";
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i>`;
+            }
+            lucide.createIcons();
+        }
+
+        function toggleRemind(btn) {
+            const isReminded = btn.classList.contains('bg-brand-cyan');
+            if (isReminded) {
+                btn.className = "mt-2 text-xs text-brand-cyan font-bold flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-brand-cyan transition";
+                btn.innerHTML = `<i data-lucide="bell" class="w-3.5 h-3.5"></i> <span>Remind Me</span>`;
+            } else {
+                btn.className = "mt-2 text-xs text-black font-extrabold flex items-center gap-1.5 bg-brand-cyan px-3 py-1.5 rounded-lg shadow-md transition";
+                btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> <span>Set Reminded</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        function openTrailerModal(title, url) {
+            document.getElementById('trailer-modal-title').innerText = title + ' - Official Trailer';
+            document.getElementById('trailer-iframe').src = url + '?autoplay=1';
+            document.getElementById('trailer-modal').classList.remove('hidden');
+        }
+
+        function closeTrailerModal() {
+            document.getElementById('trailer-modal').classList.add('hidden');
+            document.getElementById('trailer-iframe').src = '';
+        }
+
+        document.getElementById('slide-next-btn').addEventListener('click', () => {
+            nextSlide();
+            startAutoSlide();
+        });
+
+        document.getElementById('slide-prev-btn').addEventListener('click', () => {
+            prevSlide();
+            startAutoSlide();
+        });
+
+        window.onload = function() {
+            initHeroSlides();
+            renderAccordion('movies-accordion', moviesAccordionData);
+            renderAccordion('series-accordion', seriesAccordionData);
+            renderLiveChannels();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "seeit-all",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -n server,app -c yellow,cyan \"npm --prefix seeit start\" \"npm --prefix Mobile/SeeItMobile start\""
+  },
+  "devDependencies": { "concurrently": "^9.0.0" }
+}
