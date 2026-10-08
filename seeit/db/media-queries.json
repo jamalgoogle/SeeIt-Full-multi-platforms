@@ -1,0 +1,9 @@
+{
+  "_help": "id: [tmdb type, first year]. type is tv or movie. Used by `npm run db:media`. Games and live streams are not on TMDB: use db/my-videos.json for those.",
+  "titles": {
+    "p1": ["tv", 2016],  "p2": ["tv", 2014],  "p3": ["tv", 2010],  "p4": ["tv", 2002],  "p5": ["tv", 2009],  "p6": ["tv", 2011],
+    "c1": ["tv", 2005],  "c2": ["tv"],        "c3": ["tv", 1999],  "c4": ["tv", 2012],  "c5": ["tv", 2010],  "c6": ["tv"],
+    "m6": ["movie", 2010], "m7": ["movie", 2014], "m8": ["movie", 2008], "m9": ["movie", 2017], "m10": ["movie", 2015], "m11": ["movie", 2019],
+    "s5": ["tv", 2008],  "s6": ["tv", 2011],  "s7": ["tv", 2017],  "s8": ["tv", 2023],  "s9": ["tv", 2022],  "s10": ["tv", 2019]
+  }
+}

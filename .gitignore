@@ -52,3 +52,11 @@ desktop.ini
 !.vscode/extensions.json
 .idea/
 *.swp
+
+Desktop/
+SeeIt.mp4
+*.dll
+*.pak
+*.bin
+*.asar
+node_modules/

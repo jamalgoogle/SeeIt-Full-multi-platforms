@@ -1,0 +1,236 @@
+{
+  "heroSlides": [
+    {
+      "title": "BLADE OF THE RONIN",
+      "rating": "★ 9.0 IMDB",
+      "quality": "2h 18m · 4K ULTRA HD",
+      "genre": "Martial Arts Fantasy · Movie",
+      "desc": "A masterless warrior embarks on a treacherous pilgrimage across feudal lands to avenge his fallen clan and retrieve an ancient enchanted Katana.",
+      "image": "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1920&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/w7pYhpJaC7E"
+    },
+    {
+      "title": "CHRONICLES OF ARRAKIS",
+      "rating": "★ 8.8 IMDB",
+      "quality": "2h 45m · 4K ULTRA HD",
+      "genre": "Sci-Fi • Adventure",
+      "desc": "A mythical journey of a hero bound to fulfill a destiny beyond his comprehension, fighting across desert sands and planetary factions.",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1920&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/Way9Dexny3w"
+    },
+    {
+      "title": "CYBER SAGA 2099",
+      "rating": "★ 8.7 IMDB",
+      "quality": "1h 58m · 4K HDR10+",
+      "genre": "Cyberpunk • Action",
+      "desc": "In a neon-drenched metropolis controlled by rogue mega-corporations, a mercenary seeking freedom unlocks a deadly secret.",
+      "image": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1920&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/gCcx85zbxz4"
+    },
+    {
+      "title": "SHADOW OF THE DRAGON",
+      "rating": "★ 9.0 IMDB",
+      "quality": "2h 30m · 4K IMAX",
+      "genre": "Fantasy • Drama",
+      "desc": "An ancient kingdom faces destruction as dragons return to reclaim their lost dominion over mountain realms.",
+      "image": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1920&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/Way9Dexny3w"
+    },
+    {
+      "title": "BEYOND THE HORIZON",
+      "rating": "★ 8.9 IMDB",
+      "quality": "2h 40m · DOLBY VISION",
+      "genre": "Space • Mystery",
+      "desc": "Explorers venture into an uncharted wormhole to find a new sanctuary for humanity before time runs out.",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/zSWdZVtXT7E"
+    },
+    {
+      "title": "THE LAST SYNDICATE",
+      "rating": "★ 8.5 IMDB",
+      "quality": "2h 12m · 4K ULTRA HD",
+      "genre": "Crime • Thriller",
+      "desc": "An undercover detective infiltrates an elite global syndicate only to find corrupt forces running the highest ranks.",
+      "image": "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=1920&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/xEQP4VVuyrY"
+    }
+  ],
+  "channels": [
+    {
+      "id": "ch1",
+      "name": "MBC 1 HD",
+      "logo": "MBC 1",
+      "category": "ENTERTAINMENT & DRAMA",
+      "show": "ARABS GOT TALENT",
+      "desc": "Live performance episode featuring top vocalists, illusionists, and dancers competing for the grand championship title.",
+      "viewers": "48.2K",
+      "streamUrl": "https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1",
+      "bgImg": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+      "id": "ch2",
+      "name": "MBC DRAMA",
+      "logo": "MBC DRAMA",
+      "category": "ARABIC DRAMA & SERIES",
+      "show": "VALLEY OF SECRETS - EP 24",
+      "desc": "High stakes suspense as the family empire faces internal betrayal during prime evening broadcast.",
+      "viewers": "35.6K",
+      "streamUrl": "https://www.youtube.com/embed/fXmAurh072s?autoplay=1",
+      "bgImg": "https://images.unsplash.com/photo-1528164344705-47542687990d?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+      "id": "ch3",
+      "name": "NAT GEO WILD",
+      "logo": "NAT GEO",
+      "category": "SCIENCE & WILDLIFE",
+      "show": "PREDATORS OF THE SERENGETI",
+      "desc": "High-definition wildlife exploration following big cats during their annual migration trek.",
+      "viewers": "22.9K",
+      "streamUrl": "https://www.youtube.com/embed/Way9Dexny3w?autoplay=1",
+      "bgImg": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef9?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+      "id": "ch4",
+      "name": "beIN ACTION HD",
+      "logo": "beIN ACTION",
+      "category": "BLOCKBUSTER PREMIERES",
+      "show": "MAD MAX: FURY ROAD - LIVE",
+      "desc": "Non-stop apocalyptic highway chase through desolate wasteland realms in 4K resolution.",
+      "viewers": "29.4K",
+      "streamUrl": "https://www.youtube.com/embed/gCcx85zbxz4?autoplay=1",
+      "bgImg": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+      "id": "ch5",
+      "name": "DISCOVERY LIVE",
+      "logo": "DISCOVERY",
+      "category": "EXPEDITIONS & DOCS",
+      "show": "MYTHBUSTERS CLASSIC",
+      "desc": "Scientific experiments testing high-velocity urban legends with explosive laboratory trials.",
+      "viewers": "18.1K",
+      "streamUrl": "https://www.youtube.com/embed/zSWdZVtXT7E?autoplay=1",
+      "bgImg": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop"
+    }
+  ],
+  "movies": [
+    {
+      "id": "m1",
+      "badge": "SCI-FI BLOCKBUSTER",
+      "quality": "4K UHD",
+      "title": "ALITA: BATTLE ANGEL",
+      "rating": "8.5",
+      "stars": "★★★★☆",
+      "year": "2019",
+      "duration": "2h 02m",
+      "desc": "A deactivated cyborg is revived, but cannot remember anything of her past and sets out on a quest to discover who she is.",
+      "image": "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/w7pYhpJaC7E"
+    },
+    {
+      "id": "m2",
+      "badge": "BEST DIRECTOR",
+      "quality": "4K UHD",
+      "title": "ROMA",
+      "rating": "8.0",
+      "stars": "★★★★☆",
+      "year": "2018",
+      "duration": "2h 15m",
+      "desc": "A year in the life of a middle-class family's maid in Mexico City in the early 1970s.",
+      "image": "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/6BS27ngZlxg"
+    },
+    {
+      "id": "m3",
+      "badge": "ACADEMY WINNER",
+      "quality": "4K HDR",
+      "title": "GREEN BOOK",
+      "rating": "8.9",
+      "stars": "★★★★★",
+      "year": "2018",
+      "duration": "2h 10m",
+      "desc": "A working-class Italian-American bouncer becomes the driver of an African-American classical pianist on a tour through the 1960s American South.",
+      "image": "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/QkZxoko_hc0"
+    },
+    {
+      "id": "m4",
+      "badge": "MUSICAL EPIC",
+      "quality": "DOLBY VISION",
+      "title": "BOHEMIAN RHAPSODY",
+      "rating": "8.6",
+      "stars": "★★★★★",
+      "year": "2018",
+      "duration": "2h 14m",
+      "desc": "The story of the legendary British rock band Queen and lead singer Freddie Mercury, leading up to their iconic performance at Live Aid.",
+      "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/mP0VHJVP0W8"
+    },
+    {
+      "id": "m5",
+      "badge": "EPIC SEQUEL",
+      "quality": "IMAX 4K",
+      "title": "DUNE: PART TWO",
+      "rating": "8.8",
+      "stars": "★★★★★",
+      "year": "2024",
+      "duration": "2h 46m",
+      "desc": "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/Way9Dexny3w"
+    }
+  ],
+  "series": [
+    {
+      "id": "s1",
+      "badge": "TOP ANIMATED SERIES",
+      "quality": "4K HDR",
+      "title": "ARCANE",
+      "rating": "9.0",
+      "stars": "★★★★★",
+      "year": "2021",
+      "duration": "2 Seasons",
+      "desc": "Set in the utopian region of Piltover and the oppressed underground of Zaun, the story follows the origins of two iconic League champions.",
+      "image": "https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/fXmAurh072s"
+    },
+    {
+      "id": "s2",
+      "badge": "FEUDAL JAPAN DRAMA",
+      "quality": "DOLBY VISION",
+      "title": "SHŌGUN",
+      "rating": "8.9",
+      "stars": "★★★★★",
+      "year": "2024",
+      "duration": "1 Season",
+      "desc": "When a mysterious European ship is found marooned in a nearby fishing village, Lord Yoshii Toranaga discovers secrets that could tip the scales of power.",
+      "image": "https://images.unsplash.com/photo-1528164344705-47542687990d?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/yAN5uspO_hk"
+    },
+    {
+      "id": "s3",
+      "badge": "CYBERPUNK ANIME",
+      "quality": "4K UHD",
+      "title": "CYBERPUNK: EDGERUNNERS",
+      "rating": "8.3",
+      "stars": "★★★★☆",
+      "year": "2022",
+      "duration": "1 Season",
+      "desc": "A street kid trying to survive in a technology and body modification-obsessed city of the future stays alive by becoming an edgerunner.",
+      "image": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/JtqIas3bYhg"
+    },
+    {
+      "id": "s4",
+      "badge": "GLOBAL PHENOMENON",
+      "quality": "4K HDR",
+      "title": "STRANGER THINGS",
+      "rating": "8.7",
+      "stars": "★★★★★",
+      "year": "2016",
+      "duration": "4 Seasons",
+      "desc": "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.",
+      "image": "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=800&auto=format&fit=crop",
+      "trailer": "https://www.youtube.com/embed/b9EkMc79ZSU"
+    }
+  ]
+}

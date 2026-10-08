@@ -1,0 +1,27 @@
+{
+  "_help": "Paste a YouTube link between the quotes (watch, youtu.be or embed links all work), then run: npm run db:videos. Empty entries are skipped. Run `npm run db:videos -- --links` to print a YouTube search link for every empty entry.",
+  "titles": {
+    "g1": "https://www.youtube.com/watch?v=E3Huy2cdih0",
+    "g2": "https://www.youtube.com/watch?v=BO8lX3hDU30",
+    "g3": "",
+    "g4": "",
+    "g5": "",
+    "g6": "",
+    "g7": "",
+    "g8": "",
+    "g9": "",
+    "g10": "",
+    "g11": ""
+  },
+  "gameplay_streams": {
+    "gl1": "",
+    "gl2": "",
+    "gl3": "",
+    "gl4": "",
+    "gl5": "",
+    "gl6": "",
+    "gl7": "",
+    "gl8": ""
+  },
+  "live_channels": {}
+}

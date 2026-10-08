@@ -1,0 +1,38 @@
+{
+  "name": "seeit-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Express + PostgreSQL API for the SeeIt streaming site",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:init": "node db/init.js",
+    "db:seed": "node db/seed.js",
+    "db:reset": "node db/init.js --drop && node db/seed.js",
+    "db:setup": "node db/init.js && node db/seed.js && node db/run-sql.js db/extra-titles.sql && node db/run-sql.js db/migrate-sections.sql && node db/run-sql.js db/new-sections.sql && node db/run-sql.js db/more-games.sql && npm run db:images",
+    "db:more": "node db/run-sql.js db/extra-titles.sql",
+    "db:migrate": "node db/init.js && node db/run-sql.js db/hero-badge.sql",
+    "db:upgrade": "node db/run-sql.js db/migrate-sections.sql && node db/run-sql.js db/new-sections.sql",
+    "db:images": "node db/run-sql.js db/new-images.sql && node db/run-sql.js db/sync-hero-images.sql",
+    "db:images:fetch": "node db/refresh-images.js",
+    "db:media": "node db/refresh-media.js",
+    "db:videos": "node db/apply-videos.js",
+    "db:check-videos": "node db/check-videos.js",
+    "db:games": "node db/run-sql.js db/more-games.sql"
+  },
+  "engines": {
+    "node": ">=18.11"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
+    "zod": "^3.24.1"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "titles": {
+    "p3": "cooking kitchen chef",
+    "p4": "sports car road",
+    "p5": "business pitch startup meeting",
+    "p6": "microphone concert stage singer",
+    "c1": "mountain temple clouds",
+    "c2": "cat",
+    "c4": "pine forest mist",
+    "c5": "colorful fantasy landscape",
+    "c6": "rabbit carrot",
+    "g1": "knight armor dark castle",
+    "g2": "neon city night rain",
+    "g3": "snowy mountains viking",
+    "g4": "medieval castle forest fog",
+    "g5": "wild west desert cowboy horse",
+    "g6": "fire flames underworld"
+  },
+  "gameplay_streams": {
+    "gl7": "esports arena gaming",
+    "gl8": "gamer headset"
+  }
+}

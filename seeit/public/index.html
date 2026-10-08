@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeeIt - Cinematic Movies, TV Series & Live Channels</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            cyan: '#00F0FF',
+                            cyanHover: '#00D6E6',
+                            redLive: '#FF0055',
+                            darkBg: '#050811',
+                            cardBg: '#0E1422',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050811;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050811;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00F0FF;
+        }
+
+        /* Horizontal rows (movies / series) */
+        .h-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 14px;
+            scrollbar-width: thin;
+            scrollbar-color: #1e293b transparent;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(14, 20, 34, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-nav-scrolled {
+            background: rgba(5, 8, 17, 0.92) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Slide Transition Effect */
+        .slide-bg {
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide-bg.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .slide-bg.inactive {
+            opacity: 0;
+            transform: scale(1.08);
+        }
+
+        /* Accordion Expansion Rules */
+        .accordion-card {
+            transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .accordion-card.expanded {
+            flex: 3.8 0 min(480px, 80vw);
+            border-color: #00F0FF;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+        }
+
+        .accordion-card.collapsed {
+            flex: 1 0 150px;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .accordion-card.collapsed .expanded-content {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .accordion-card.expanded .expanded-content {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+        }
+
+        .accordion-card.collapsed .collapsed-content {
+            opacity: 1;
+            transition: opacity 0.3s ease 0.2s;
+        }
+
+        .accordion-card.expanded .collapsed-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-cyan selection:text-black">
+
+    <!-- Navigation Bar -->
+    <header id="main-nav" class="fixed top-0 left-0 right-0 z-50 px-6 lg:px-16 py-5 flex items-center justify-between transition-all duration-300 bg-transparent">
+        <div class="flex items-center gap-10">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-9 h-9 rounded-xl bg-brand-cyan flex items-center justify-center font-black text-black text-xl tracking-tighter group-hover:scale-105 transition shadow-lg shadow-brand-cyan/30">
+                    S
+                </div>
+                <span class="text-2xl font-black tracking-wider text-white">SEE<span class="text-brand-cyan">IT</span></span>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-7 text-xs font-bold uppercase tracking-wider text-slate-300">
+                <a href="#home" class="hover:text-brand-cyan transition">Home</a>
+                <a href="#movies" class="hover:text-brand-cyan transition">Movies</a>
+                <a href="#series" class="hover:text-brand-cyan transition">TV Series</a>
+                <a href="#live-tv" class="hover:text-brand-cyan transition flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-brand-redLive animate-pulse"></span>
+                    Live Channels
+                </a>
+                <a href="#programs" class="hidden xl:inline hover:text-brand-cyan transition">Programs</a>
+                <a href="#cartoons" class="hidden xl:inline hover:text-brand-cyan transition">Cartoons</a>
+                <a href="#gameplay-live" class="hidden xl:inline hover:text-brand-cyan transition">Gaming</a>
+                <a href="#categories" class="hover:text-brand-cyan transition">Genres</a>
+            </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="relative hidden sm:block">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input id="search-input" type="text" autocomplete="off" aria-label="Search" placeholder="Search title, live channel, genre..." class="bg-slate-900/60 backdrop-blur-md border border-white/20 rounded-full pl-10 pr-4 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-cyan w-48 focus:w-64 transition-all">
+            </div>
+            
+            <div id="auth-slot" class="flex items-center gap-2"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section id="home" class="relative w-full h-screen min-h-[680px] flex items-center justify-between px-6 lg:px-16 overflow-hidden pt-20">
+            
+            <!-- Hero Slide Backdrops -->
+            <div id="hero-bg-container" class="absolute inset-0 z-0">
+                <!-- Background images injected via JS -->
+            </div>
+
+            <!-- Dark Vignette Overlays -->
+            <div class="absolute inset-0 bg-gradient-to-r from-[#050811] via-[#050811]/70 to-transparent z-10"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#050811] via-transparent to-[#050811]/50 z-10"></div>
+
+            <!-- Left Hero Content -->
+            <div class="relative z-20 max-w-2xl space-y-6 pt-8">
+                <div id="hero-badge" class="hidden inline-flex items-center gap-2 bg-brand-cyan/10 border border-brand-cyan/30 px-3.5 py-1.5 rounded-full text-brand-cyan text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span> <span id="hero-badge-text"></span>
+                </div>
+
+                <h1 id="hero-title" class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase leading-none drop-shadow-2xl"></h1>
+
+                <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-300">
+                    <span id="hero-rating" class="bg-amber-400 text-black px-2.5 py-1 rounded font-black shadow-md"></span>
+                    <span id="hero-quality" class="bg-white/10 backdrop-blur-md border border-white/20 px-2.5 py-1 rounded"></span>
+                    <span id="hero-genre" class="text-brand-cyan font-semibold"></span>
+                </div>
+
+                <p id="hero-desc" class="text-slate-300 text-sm md:text-base leading-relaxed line-clamp-3 max-w-xl"></p>
+
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <button id="hero-trailer-btn" class="bg-brand-cyan hover:bg-brand-cyanHover text-black px-7 py-3.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center gap-2.5 transition-all shadow-xl shadow-brand-cyan/30 transform hover:-translate-y-0.5 active:translate-y-0">
+                        <i data-lucide="play" class="w-4 h-4 fill-black"></i> <span id="hero-cta-text">Watch Trailer</span>
+                    </button>
+                    <a href="#movies" class="bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700/80 px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
+                        <i data-lucide="film" class="w-4 h-4 text-brand-cyan"></i> Explore Catalog
+                    </a>
+                </div>
+            </div>
+
+            <!-- Vertical Pagination Slider (Right side - Clean & Minimal) -->
+            <div class="relative z-20 flex flex-col items-center gap-5 my-auto pl-4">
+                <span id="current-slide-num" class="text-xs font-black text-brand-cyan tracking-widest"></span>
+                
+                <div class="relative w-1 h-36 bg-slate-800/80 backdrop-blur-md rounded-full overflow-hidden">
+                    <div id="slide-progress" class="absolute top-0 w-full bg-brand-cyan rounded-full transition-all duration-500" style="height: 0%;"></div>
+                </div>
+
+                <span id="total-slide-num" class="text-xs font-black text-slate-500"></span>
+                
+                <div class="flex flex-col gap-2 pt-1">
+                    <button id="slide-prev-btn" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition hover:scale-110">
+                        <i data-lucide="chevron-up" class="w-4 h-4"></i>
+                    </button>
+                    <button id="slide-next-btn" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition hover:scale-110">
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider">Explore Genres</h2>
+                    <p class="text-xs text-slate-400 mt-1">Discover curated collections tailored to your taste</p>
+                </div>
+            </div>
+
+            <div id="genres-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4"></div>
+        </section>
+
+        <!-- Feature Movies Section -->
+        <section id="movies" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="film" class="w-6 h-6 text-brand-cyan"></i> Feature Movies
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Hover over any title to open details & preview options</p>
+                </div>
+                <div data-scroll-controls="movies-accordion" class="hidden items-center gap-2"><button type="button" data-scroll-for="movies-accordion" data-dir="-1" aria-label="Scroll left" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button type="button" data-scroll-for="movies-accordion" data-dir="1" aria-label="Scroll right" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+            </div>
+
+            <!-- Movies Expanding Flex Accordion Container -->
+            <div id="movies-accordion" class="h-scroll flex flex-row gap-4 h-[440px] w-full">
+                <!-- Movie Accordion Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- TV Series Section -->
+        <section id="series" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="tv" class="w-6 h-6 text-brand-cyan"></i> Trending TV Series
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Binge-worthy original sagas with expanding detailed cards</p>
+                </div>
+                <div data-scroll-controls="series-accordion" class="hidden items-center gap-2"><button type="button" data-scroll-for="series-accordion" data-dir="-1" aria-label="Scroll left" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button type="button" data-scroll-for="series-accordion" data-dir="1" aria-label="Scroll right" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+            </div>
+
+            <!-- Series Expanding Flex Accordion Container -->
+            <div id="series-accordion" class="h-scroll flex flex-row gap-4 h-[440px] w-full">
+                <!-- Series Accordion Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- TV Programs Section -->
+        <section id="programs" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="clapperboard" class="w-6 h-6 text-brand-cyan"></i> TV Programs
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Documentaries, competitions and shows to watch next</p>
+                </div>
+                <div data-scroll-controls="programs-accordion" class="hidden items-center gap-2"><button type="button" data-scroll-for="programs-accordion" data-dir="-1" aria-label="Scroll left" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button type="button" data-scroll-for="programs-accordion" data-dir="1" aria-label="Scroll right" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+            </div>
+
+            <div id="programs-accordion" class="h-scroll flex flex-row gap-4 h-[440px] w-full">
+                <!-- Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Cartoons Section -->
+        <section id="cartoons" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="smile" class="w-6 h-6 text-brand-cyan"></i> Cartoons
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Classic and modern animation for the whole family</p>
+                </div>
+                <div data-scroll-controls="cartoons-accordion" class="hidden items-center gap-2"><button type="button" data-scroll-for="cartoons-accordion" data-dir="-1" aria-label="Scroll left" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button type="button" data-scroll-for="cartoons-accordion" data-dir="1" aria-label="Scroll right" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+            </div>
+
+            <div id="cartoons-accordion" class="h-scroll flex flex-row gap-4 h-[440px] w-full">
+                <!-- Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Live TV Channels & TV Shows Section -->
+        <section id="live-tv" class="px-6 lg:px-16 py-12 border-t border-white/10 bg-gradient-to-b from-transparent via-[#080d1a]/50 to-transparent">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-brand-redLive/10 border border-brand-redLive/30 text-brand-redLive px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-2">
+                        <span class="w-2 h-2 rounded-full bg-brand-redLive animate-pulse"></span> 24/7 Live Broadcast
+                    </div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="radio" class="w-6 h-6 text-brand-redLive"></i> Live TV Channels & Shows
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Stream premium live television channels, news, and entertainment directly inside SeeIt</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400 font-bold uppercase"><i data-lucide="users" class="w-3.5 h-3.5 inline text-brand-cyan"></i> <span id="total-viewers">0</span> Watching Live</span>
+                </div>
+            </div>
+
+            <!-- In-Platform Embedded Live TV Player Showcase -->
+            <div class="glass-card rounded-2xl overflow-hidden p-6 mb-8 border border-white/10">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    <!-- Stream Video Player Container -->
+                    <div class="lg:col-span-2 relative aspect-video bg-black rounded-xl overflow-hidden border border-white/10 group">
+                        <iframe id="live-stream-player" class="w-full h-full" src="about:blank" title="Live Stream" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        
+                        <div id="live-lock" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/85 backdrop-blur-sm text-center px-6">
+                            <i data-lucide="lock" class="w-8 h-8 text-brand-cyan"></i>
+                            <p class="text-sm font-black text-white uppercase tracking-wider">Log in to watch live</p>
+                            <p class="text-xs text-slate-400 max-w-xs">The channel guide is open to everyone. Streams need an account.</p>
+                            <button id="live-lock-btn" type="button" class="bg-brand-cyan hover:bg-brand-cyanHover text-black px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition shadow-lg shadow-brand-cyan/20">Log in</button>
+                        </div>
+
+                        <div class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+                            <span class="w-2.5 h-2.5 rounded-full bg-brand-redLive animate-ping"></span>
+                            <span class="text-xs font-black text-white uppercase tracking-wider" id="active-channel-name"></span>
+                        </div>
+                    </div>
+
+                    <!-- Live Channel Guide & Details -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan text-[10px] font-black px-2 py-0.5 rounded uppercase" id="active-channel-badge"></span>
+                                <h3 class="text-2xl font-black text-white mt-1 uppercase" id="active-show-title"></h3>
+                                <p class="text-xs text-slate-400 mt-1" id="active-show-desc"></p>
+                            </div>
+                        </div>
+
+                        <!-- Time & Broadcast Bar -->
+                        <div class="space-y-1.5 bg-slate-900/80 p-3 rounded-xl border border-white/5">
+                            <div class="flex justify-between text-xs text-slate-300 font-bold">
+                                <span>NOW AIRING: <span class="text-white" id="active-program-name"></span></span>
+                                <span id="active-time-left" class="text-brand-redLive"></span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                <div id="active-progress" class="bg-brand-redLive h-full rounded-full" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Channel Stats -->
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Resolution</span>
+                                <span id="active-resolution" class="text-white font-extrabold"></span>
+                            </div>
+                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Audio Language</span>
+                                <span id="active-audio" class="text-white font-extrabold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Channels Cards Carousel / Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="channels-grid">
+                <!-- Channel Cards Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Gameplay Live Section -->
+        <section id="gameplay-live" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-brand-redLive/10 border border-brand-redLive/30 text-brand-redLive px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-2">
+                        <span class="w-2 h-2 rounded-full bg-brand-redLive animate-pulse"></span> Streaming Now
+                    </div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="gamepad-2" class="w-6 h-6 text-brand-cyan"></i> Gameplay Live
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Watch gamers play live, with chat, tips and clutch moments</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-slate-400 font-bold uppercase"><i data-lucide="users" class="w-3.5 h-3.5 inline text-brand-cyan"></i> <span id="gameplay-viewers">0</span> Watching</span>
+                    <div data-scroll-controls="gameplay-grid" class="hidden items-center gap-2"><button type="button" data-scroll-for="gameplay-grid" data-dir="-1" aria-label="Scroll left" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button type="button" data-scroll-for="gameplay-grid" data-dir="1" aria-label="Scroll right" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+                </div>
+            </div>
+
+            <div id="gameplay-grid" class="h-scroll flex flex-row gap-4 w-full">
+                <!-- Stream cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Game Videos Section -->
+        <section id="game-videos" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                        <i data-lucide="video" class="w-6 h-6 text-brand-cyan"></i> Game Videos
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Trailers, cinematics and gameplay from the biggest games</p>
+                </div>
+                <div data-scroll-controls="gamevideos-accordion" class="hidden items-center gap-2"><button type="button" data-scroll-for="gamevideos-accordion" data-dir="-1" aria-label="Scroll left" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><button type="button" data-scroll-for="gamevideos-accordion" data-dir="1" aria-label="Scroll right" class="w-9 h-9 rounded-full bg-slate-900/80 border border-slate-700 hover:border-brand-cyan text-white flex items-center justify-center transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
+            </div>
+
+            <div id="gamevideos-accordion" class="h-scroll flex flex-row gap-4 h-[440px] w-full">
+                <!-- Cards injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Coming Soon / New Releases -->
+        <section id="coming-soon" class="px-6 lg:px-16 py-12 border-t border-white/10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+                    <i data-lucide="sparkles" class="w-6 h-6 text-brand-cyan"></i> Coming Soon / New Releases
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Upcoming blockbusters heading to SeeIt streaming platform</p>
+            </div>
+
+            <div id="coming-soon-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <!-- Results modal (search + genre browsing) -->
+    <div id="results-modal" class="fixed inset-0 z-40 flex items-start justify-center bg-black/85 backdrop-blur-md hidden p-4 overflow-y-auto">
+        <div class="relative w-full max-w-4xl mt-20 mb-10 glass-card rounded-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/80">
+                <h3 id="results-title" class="text-sm font-black text-white uppercase tracking-wider">Results</h3>
+                <button id="results-close" type="button" aria-label="Close" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-brand-cyan hover:text-black text-white flex items-center justify-center transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div id="results-body" class="p-6 space-y-6"></div>
+        </div>
+    </div>
+
+    <!-- Auth modal -->
+    <div id="auth-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 backdrop-blur-md hidden p-4" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <div class="relative w-full max-w-md glass-card rounded-2xl p-8 shadow-2xl">
+            <button id="auth-close" type="button" aria-label="Close" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-800 hover:bg-brand-cyan hover:text-black text-white flex items-center justify-center transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-8 h-8 rounded-xl bg-brand-cyan flex items-center justify-center font-black text-black text-lg shadow-lg shadow-brand-cyan/30">S</div>
+                <span class="text-xl font-black tracking-wider text-white">SEE<span class="text-brand-cyan">IT</span></span>
+            </div>
+            <h3 id="auth-title" class="text-2xl font-black text-white tracking-tight">Welcome back</h3>
+            <p id="auth-reason" class="text-xs text-slate-400 mt-1 min-h-[1rem]"></p>
+
+            <form id="auth-form" class="mt-6 space-y-4" novalidate>
+                <div id="auth-name-wrap" class="hidden">
+                    <label for="auth-name" class="block text-xs font-bold text-slate-300 mb-1.5">Name</label>
+                    <input id="auth-name" type="text" autocomplete="name" maxlength="60" class="w-full bg-slate-900/70 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-cyan">
+                </div>
+                <div>
+                    <label for="auth-email" class="block text-xs font-bold text-slate-300 mb-1.5">Email</label>
+                    <input id="auth-email" type="email" autocomplete="email" class="w-full bg-slate-900/70 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-cyan">
+                </div>
+                <div>
+                    <label for="auth-password" class="block text-xs font-bold text-slate-300 mb-1.5">Password</label>
+                    <input id="auth-password" type="password" autocomplete="current-password" class="w-full bg-slate-900/70 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-cyan">
+                    <p id="auth-password-hint" class="hidden text-[11px] text-slate-500 mt-1.5">At least 8 characters.</p>
+                </div>
+                <p id="auth-error" role="alert" class="hidden text-xs text-brand-redLive bg-brand-redLive/10 border border-brand-redLive/30 rounded-lg px-3 py-2"></p>
+                <button id="auth-submit" type="submit" class="w-full bg-brand-cyan hover:bg-brand-cyanHover disabled:opacity-60 text-black py-3 rounded-xl font-black text-xs uppercase tracking-wider transition shadow-lg shadow-brand-cyan/20">Log in</button>
+            </form>
+
+            <p class="text-xs text-slate-400 mt-5 text-center">
+                <span id="auth-switch-text">New to SeeIt?</span>
+                <button id="auth-switch-btn" type="button" class="text-brand-cyan font-bold hover:underline">Sign up</button>
+            </p>
+        </div>
+    </div>
+
+    <div id="toast" role="status" class="fixed bottom-6 right-6 z-[70] hidden bg-slate-900 border border-white/15 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl"></div>
+
+    <!-- Modal Video Trailer -->
+    <div id="trailer-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md hidden p-4">
+        <div class="relative w-full max-w-4xl bg-slate-900 rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950">
+                <h3 id="trailer-modal-title" class="text-sm font-black text-white uppercase tracking-wider">Movie Trailer</h3>
+                <button onclick="closeTrailerModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-brand-cyan hover:text-black text-white flex items-center justify-center transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="relative aspect-video w-full bg-black">
+                <iframe id="trailer-iframe" class="w-full h-full" src="" title="Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-[#050811] px-6 lg:px-16 py-8 text-center text-xs text-slate-500">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 max-w-7xl mx-auto">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-brand-cyan flex items-center justify-center font-black text-black text-xs">S</div>
+                <span class="text-sm font-black text-white">SEE<span class="text-brand-cyan">IT</span></span>
+            </div>
+            <p>© 2026 SeeIt Streaming Platform. All rights reserved.</p>
+            <div class="flex gap-4 text-slate-400 font-medium">
+                <a href="#" class="hover:text-brand-cyan transition">Privacy Policy</a>
+                <a href="#" class="hover:text-brand-cyan transition">Terms of Service</a>
+                <a href="#" class="hover:text-brand-cyan transition">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // All content now comes from the API (/api/...). Nothing about movies, channels or genres lives in this file.
+        const API = '/api';
+        const state = {
+            token: localStorage.getItem('seeit_token'),
+            user: null,
+            slides: [],
+            channels: [],
+            currentSlide: 0,
+            activeChannelId: null,
+            streamReq: 0,
+            authMode: 'login',
+            authReason: '',
+            pendingAction: null
+        };
+        let slideInterval = null;
+        let toastTimer = null;
+        let searchTimer = null;
+
+        // A missing image should leave a dark card, not a broken-image icon.
+        // YouTube thumbnails: not every video has the 1080p one, so fall back to the smaller one that always exists.
+        document.addEventListener('error', (e) => {
+            const img = e.target;
+            if (img.tagName !== 'IMG') return;
+            if (/\/maxresdefault(_live)?\.jpg/.test(img.src)) { img.src = img.src.replace(/maxresdefault(_live)?\.jpg/, 'mqdefault.jpg'); return; }
+            img.style.visibility = 'hidden';
+        }, true);
+
+        const $ = (id) => document.getElementById(id);
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const pad2 = (n) => String(n).padStart(2, '0');
+        const viewersLabel = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n));
+        const starsLabel = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+        function toast(msg) {
+            const el = $('toast');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.add('hidden'), 3200);
+        }
+
+        async function api(path, { method = 'GET', body } = {}) {
+            const headers = {};
+            if (body) headers['Content-Type'] = 'application/json';
+            if (state.token) headers.Authorization = 'Bearer ' + state.token;
+            const res = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const err = new Error(data.error || 'Request failed');
+                err.status = res.status;
+                throw err;
+            }
+            return data;
+        }
+
+        /* ---------- Auth ---------- */
+
+        // Every action goes through this. Logged out: open the login modal and resume the action after login.
+        async function guardedCall(reason, fn) {
+            if (!state.user) { promptLogin(reason, () => guardedCall(reason, fn)); return; }
+            try {
+                return await fn();
+            } catch (err) {
+                if (err.status === 401) {
+                    clearSession();
+                    promptLogin(reason, () => guardedCall(reason, fn));
+                } else {
+                    toast(err.message);
+                }
+            }
+        }
+
+        function promptLogin(reason, resume) {
+            state.pendingAction = resume || null;
+            state.authReason = reason || '';
+            openAuthModal('login');
+        }
+
+        function setAuthMode(mode) {
+            state.authMode = mode;
+            const signup = mode === 'signup';
+            $('auth-title').textContent = signup ? 'Create your account' : 'Welcome back';
+            $('auth-name-wrap').classList.toggle('hidden', !signup);
+            $('auth-password-hint').classList.toggle('hidden', !signup);
+            $('auth-submit').textContent = signup ? 'Create account' : 'Log in';
+            $('auth-switch-text').textContent = signup ? 'Already have an account?' : 'New to SeeIt?';
+            $('auth-switch-btn').textContent = signup ? 'Log in' : 'Sign up';
+            $('auth-password').autocomplete = signup ? 'new-password' : 'current-password';
+            $('auth-error').classList.add('hidden');
+            const r = state.authReason;
+            $('auth-reason').textContent = r ? (signup ? `Create an account to ${r}.` : `Log in to ${r}.`) : '';
+        }
+
+        function openAuthModal(mode) {
+            setAuthMode(mode || 'login');
+            $('auth-modal').classList.remove('hidden');
+            setTimeout(() => ($('auth-modal').querySelector(mode === 'signup' ? '#auth-name' : '#auth-email')).focus(), 50);
+        }
+
+        function closeAuthModal() {
+            $('auth-modal').classList.add('hidden');
+            $('auth-form').reset();
+            state.pendingAction = null;
+            state.authReason = '';
+        }
+
+        function setSession(token, user) {
+            state.token = token;
+            state.user = user;
+            localStorage.setItem('seeit_token', token);
+            onAuthChange();
+        }
+
+        function clearSession() {
+            state.token = null;
+            state.user = null;
+            localStorage.removeItem('seeit_token');
+            onAuthChange();
+        }
+
+        async function restoreSession() {
+            if (!state.token) return;
+            try {
+                state.user = (await api('/auth/me')).user;
+            } catch {
+                state.token = null;
+                localStorage.removeItem('seeit_token');
+            }
+        }
+
+        // Watchlist / reminder flags depend on who is logged in, so reload those sections.
+        function onAuthChange() {
+            renderAuthSlot();
+            updateLiveLock();
+            loadRows().catch(() => {});
+            loadComingSoon().catch(() => {});
+        }
+
+        function renderAuthSlot() {
+            const slot = $('auth-slot');
+            if (state.user) {
+                slot.innerHTML = `
+                    <span class="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-200">
+                        <span class="w-8 h-8 rounded-full bg-brand-cyan text-black flex items-center justify-center font-black">${esc(state.user.name.charAt(0).toUpperCase())}</span>
+                        <span class="max-w-[8rem] truncate">${esc(state.user.name)}</span>
+                    </span>
+                    <button id="logout-btn" type="button" class="bg-slate-900/80 border border-white/20 hover:border-brand-cyan text-white px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase transition">Log out</button>`;
+                $('logout-btn').addEventListener('click', () => { clearSession(); toast('You are logged out'); });
+            } else {
+                slot.innerHTML = `
+                    <button id="login-btn" type="button" class="text-white hover:text-brand-cyan px-3 py-2 font-bold text-xs tracking-wider uppercase transition">Log in</button>
+                    <button id="signup-btn" type="button" class="bg-brand-cyan text-black px-5 py-2 rounded-full font-extrabold text-xs tracking-wider uppercase hover:bg-brand-cyanHover transition-all shadow-lg shadow-brand-cyan/20">Sign up</button>`;
+                $('login-btn').addEventListener('click', () => { state.authReason = ''; state.pendingAction = null; openAuthModal('login'); });
+                $('signup-btn').addEventListener('click', () => { state.authReason = ''; state.pendingAction = null; openAuthModal('signup'); });
+            }
+        }
+
+        $('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const signup = state.authMode === 'signup';
+            const body = { email: $('auth-email').value, password: $('auth-password').value };
+            if (signup) body.name = $('auth-name').value;
+            const btn = $('auth-submit');
+            btn.disabled = true;
+            try {
+                const { token, user } = await api(signup ? '/auth/signup' : '/auth/login', { method: 'POST', body });
+                const resume = state.pendingAction;
+                closeAuthModal();
+                setSession(token, user);
+                toast(`Welcome, ${user.name}`);
+                if (resume) resume();
+            } catch (err) {
+                const box = $('auth-error');
+                box.textContent = err.message;
+                box.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+        $('auth-switch-btn').addEventListener('click', () => setAuthMode(state.authMode === 'login' ? 'signup' : 'login'));
+        $('auth-close').addEventListener('click', closeAuthModal);
+        $('auth-modal').addEventListener('click', (e) => { if (e.target === $('auth-modal')) closeAuthModal(); });
+
+        /* ---------- Nav ---------- */
+
+        window.addEventListener('scroll', () => {
+            const nav = $('main-nav');
+            if (window.scrollY > 40) {
+                nav.classList.add('glass-nav-scrolled');
+                nav.classList.remove('bg-transparent', 'py-5');
+                nav.classList.add('py-3');
+            } else {
+                nav.classList.remove('glass-nav-scrolled');
+                nav.classList.add('bg-transparent', 'py-5');
+                nav.classList.remove('py-3');
+            }
+        });
+
+        /* ---------- Hero ---------- */
+
+        async function loadHero() {
+            state.slides = (await api('/hero-slides')).slides;
+            initHeroSlides();
+        }
+
+        function initHeroSlides() {
+            if (!state.slides.length) return;
+            $('hero-bg-container').innerHTML = state.slides.map((slide, idx) => `
+                <div class="slide-bg absolute inset-0 ${idx === 0 ? 'active' : 'inactive'}" id="bg-slide-${idx}">
+                    <img src="${esc(slide.image)}" class="w-full h-full object-cover filter brightness-90" alt="${esc(slide.title)}">
+                </div>`).join('');
+            $('total-slide-num').textContent = pad2(state.slides.length);
+            state.currentSlide = 0;
+            updateSlideUI();
+            startAutoSlide();
+        }
+
+        function updateSlideUI() {
+            state.slides.forEach((_, idx) => {
+                const el = $(`bg-slide-${idx}`);
+                if (!el) return;
+                el.classList.toggle('active', idx === state.currentSlide);
+                el.classList.toggle('inactive', idx !== state.currentSlide);
+            });
+
+            const slide = state.slides[state.currentSlide];
+            const isLive = slide.ctaLabel === 'WATCH LIVE';
+            $('hero-title').textContent = slide.title;
+
+            // Slides with no rating (live streams) show a LIVE chip instead of a score.
+            const ratingEl = $('hero-rating');
+            const hasRating = slide.rating !== null && slide.rating !== undefined;
+            ratingEl.textContent = hasRating ? `★ ${Number(slide.rating).toFixed(1)} ${slide.ratingSource || 'IMDB'}` : '● LIVE NOW';
+            ratingEl.classList.toggle('bg-amber-400', hasRating);
+            ratingEl.classList.toggle('text-black', hasRating);
+            ratingEl.classList.toggle('bg-brand-redLive', !hasRating);
+            ratingEl.classList.toggle('text-white', !hasRating);
+
+            $('hero-quality').textContent = slide.quality;
+            $('hero-genre').textContent = slide.genre;
+            $('hero-badge-text').textContent = slide.badge || '';
+            $('hero-badge').classList.toggle('hidden', !slide.badge);
+            $('hero-desc').textContent = slide.description;
+            $('hero-cta-text').textContent = slide.ctaLabel || 'WATCH TRAILER';
+            $('current-slide-num').textContent = pad2(state.currentSlide + 1);
+            $('slide-progress').style.height = `${((state.currentSlide + 1) / state.slides.length) * 100}%`;
+
+            $('hero-trailer-btn').onclick = () => guardedCall(isLive ? 'watch live streams' : 'watch trailers', async () => {
+                const t = await api(`/hero-slides/${slide.id}/trailer`);
+                openTrailerModal(slide.title, t.trailerUrl, isLive ? 'Live' : 'Official Trailer');
+            });
+        }
+
+        function nextSlide() { state.currentSlide = (state.currentSlide + 1) % state.slides.length; updateSlideUI(); }
+        function prevSlide() { state.currentSlide = (state.currentSlide - 1 + state.slides.length) % state.slides.length; updateSlideUI(); }
+        function startAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 6000);
+        }
+
+        $('slide-next-btn').addEventListener('click', () => { if (state.slides.length) { nextSlide(); startAutoSlide(); } });
+        $('slide-prev-btn').addEventListener('click', () => { if (state.slides.length) { prevSlide(); startAutoSlide(); } });
+
+        /* ---------- Genres ---------- */
+
+        async function loadGenres() {
+            const { genres } = await api('/genres');
+            const grid = $('genres-grid');
+            grid.innerHTML = genres.map((g) => `
+                <div data-slug="${esc(g.slug)}" data-name="${esc(g.name)}" tabindex="0" role="button" class="group relative h-32 rounded-2xl overflow-hidden cursor-pointer border border-white/10 hover:border-brand-cyan focus:border-brand-cyan focus:outline-none transition duration-300">
+                    <img src="${esc(g.imageUrl)}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 filter brightness-75 group-hover:brightness-100" alt="${esc(g.name)}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="text-xs text-brand-cyan font-bold uppercase">${Number(g.titleCount).toLocaleString('en-US')}+ Titles</span>
+                        <h3 class="font-bold text-white text-base group-hover:text-brand-cyan transition">${esc(g.name)}</h3>
+                    </div>
+                </div>`).join('');
+            grid.querySelectorAll('[data-slug]').forEach((card) => {
+                const open = () => openGenre(card.dataset.slug);
+                card.addEventListener('click', open);
+                card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+            });
+        }
+
+        function openGenre(slug) {
+            guardedCall('browse genres', async () => {
+                const { genre, titles } = await api(`/genres/${encodeURIComponent(slug)}/titles`);
+                showResults(genre.name, titles.length
+                    ? `<div class="grid grid-cols-2 md:grid-cols-4 gap-4">${titles.map(titleCardHTML).join('')}</div>`
+                    : `<p class="text-sm text-slate-400">No titles in this genre yet.</p>`);
+            });
+        }
+
+        /* ---------- Movies & series (accordions) ---------- */
+
+        const WL_OFF = 'w-9 h-9 rounded-lg bg-slate-900/80 border border-white/20 hover:border-brand-cyan text-white flex items-center justify-center transition';
+        const WL_ON = 'w-9 h-9 rounded-lg bg-brand-cyan text-black flex items-center justify-center transition shadow-md shadow-brand-cyan/30';
+
+        // Wording for each kind of title. The titles themselves come from the API.
+        const KINDS = {
+            movie:      { label: 'Movie',      play: 'WATCH TRAILER', clip: 'Official Trailer' },
+            series:     { label: 'Series',     play: 'WATCH TRAILER', clip: 'Official Trailer' },
+            program:    { label: 'Program',    play: 'WATCH PREVIEW', clip: 'Preview' },
+            cartoon:    { label: 'Cartoon',    play: 'WATCH CLIP',    clip: 'Clip' },
+            game_video: { label: 'Game Video', play: 'WATCH VIDEO',   clip: 'Gameplay' }
+        };
+
+        const ROWS = [
+            { id: 'movies-accordion',     path: '/movies',      key: 'movies' },
+            { id: 'series-accordion',     path: '/series',      key: 'series' },
+            { id: 'programs-accordion',   path: '/programs',    key: 'programs' },
+            { id: 'cartoons-accordion',   path: '/cartoons',    key: 'cartoons' },
+            { id: 'gamevideos-accordion', path: '/game-videos', key: 'gameVideos' }
+        ];
+        const SCROLL_ROWS = [...ROWS.map((r) => r.id), 'gameplay-grid'];
+
+        async function loadRows() {
+            const results = await Promise.allSettled(ROWS.map(async (r) => renderAccordion(r.id, (await api(r.path))[r.key])));
+            if (results.some((r) => r.status === 'rejected')) throw new Error('Some rows failed to load');
+        }
+
+        function setWatchlistBtn(btn, on) {
+            btn.dataset.on = on ? '1' : '0';
+            btn.className = on ? WL_ON : WL_OFF;
+            btn.setAttribute('aria-label', on ? 'Remove from watchlist' : 'Add to watchlist');
+            btn.innerHTML = `<i data-lucide="${on ? 'check' : 'plus'}" class="w-4 h-4"></i>`;
+        }
+
+        function renderAccordion(containerId, items) {
+            const container = $(containerId);
+            container.closest('section').classList.toggle('hidden', items.length === 0); // no rows, no empty section
+            const prevExpanded = container.querySelector('.accordion-card.expanded')?.dataset.id;
+            container.innerHTML = items.map((item, index) => {
+                const isExpanded = prevExpanded ? item.id === prevExpanded : index === 0;
+                return `
+                    <div data-id="${esc(item.id)}" class="accordion-card ${isExpanded ? 'expanded' : 'collapsed'} relative rounded-2xl overflow-hidden cursor-pointer group bg-slate-900/80">
+                        <img src="${esc(item.imageUrl)}" class="absolute inset-0 w-full h-full object-cover brightness-75 group-hover:scale-105 transition duration-700" alt="${esc(item.title)}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
+
+                        <div class="collapsed-content absolute bottom-6 left-6 right-6 flex flex-col justify-end">
+                            <span class="text-xs font-black text-amber-400 mb-1 flex items-center gap-1">
+                                ${Number(item.rating).toFixed(1)} <span class="text-[10px] text-amber-400">${starsLabel(item.stars)}</span>
+                            </span>
+                            <h3 class="font-black text-white text-sm uppercase truncate tracking-wider">${esc(item.title)}</h3>
+                        </div>
+
+                        <div class="expanded-content absolute inset-0 p-6 flex flex-col justify-between z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-brand-cyan text-black px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-md shadow-brand-cyan/20">
+                                    <i data-lucide="award" class="w-3 h-3"></i> ${esc(item.badge)}
+                                </span>
+                                <span class="bg-black/70 border border-white/20 text-slate-200 px-2 py-1 rounded text-[10px] font-extrabold uppercase">${esc(item.quality)}</span>
+                            </div>
+
+                            <div class="space-y-3 max-w-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl font-black text-white">${Number(item.rating).toFixed(1)}</span>
+                                    <span class="text-amber-400 text-sm tracking-widest">${starsLabel(item.stars)}</span>
+                                </div>
+                                <h3 class="text-2xl lg:text-3xl font-black text-white uppercase tracking-tight leading-none">${esc(item.title)}</h3>
+                                <div class="text-xs font-bold text-brand-cyan"><span>${esc(item.year)}</span> • <span>${esc(item.duration)}</span></div>
+                                <p class="text-xs text-slate-300 leading-relaxed line-clamp-2">${esc(item.description)}</p>
+                                <div class="flex items-center gap-3 pt-2">
+                                    <button type="button" class="bg-brand-cyan hover:bg-brand-cyanHover text-black px-5 py-2.5 rounded-lg font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-brand-cyan/20 transition">
+                                        <i data-lucide="play" class="w-3.5 h-3.5 fill-black"></i> ${esc(KINDS[item.kind]?.play || 'WATCH TRAILER')}
+                                    </button>
+                                    <button type="button" data-watchlist class="${WL_OFF}"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            const byId = Object.fromEntries(items.map((i) => [i.id, i]));
+            container.querySelectorAll('.accordion-card').forEach((card) => {
+                const id = card.dataset.id;
+                const btn = card.querySelector('[data-watchlist]');
+                setWatchlistBtn(btn, byId[id].inWatchlist);
+                card.addEventListener('mouseenter', () => handleAccordionHover(containerId, id));
+                card.addEventListener('click', () => openTitleTrailer(id));
+                btn.addEventListener('click', (e) => { e.stopPropagation(); toggleWatchlist(id, btn); });
+            });
+            lucide.createIcons();
+            refreshScrollButtons(containerId);
+        }
+
+        function refreshScrollButtons(containerId) {
+            const row = $(containerId);
+            const controls = document.querySelector(`[data-scroll-controls="${containerId}"]`);
+            if (row && controls) controls.classList.toggle('hidden', row.scrollWidth <= row.clientWidth + 1);
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-scroll-for]');
+            if (!btn) return;
+            const row = $(btn.dataset.scrollFor);
+            row.scrollBy({ left: Number(btn.dataset.dir) * row.clientWidth * 0.8, behavior: 'smooth' });
+        });
+        window.addEventListener('resize', () => SCROLL_ROWS.forEach(refreshScrollButtons));
+
+        function handleAccordionHover(containerId, activeId) {
+            $(containerId).querySelectorAll('.accordion-card').forEach((card) => {
+                const active = card.dataset.id === activeId;
+                card.classList.toggle('expanded', active);
+                card.classList.toggle('collapsed', !active);
+            });
+        }
+
+        function openTitleTrailer(id) {
+            guardedCall('watch trailers', async () => {
+                const t = await api(`/titles/${encodeURIComponent(id)}/trailer`);
+                openTrailerModal(t.title, t.trailerUrl, KINDS[t.kind]?.clip);
+            });
+        }
+
+        function toggleWatchlist(id, btn) {
+            guardedCall('save titles to your watchlist', async () => {
+                const on = btn.dataset.on === '1';
+                await api(`/watchlist/${encodeURIComponent(id)}`, { method: on ? 'DELETE' : 'POST' });
+                setWatchlistBtn(btn, !on);
+                lucide.createIcons();
+                toast(on ? 'Removed from your watchlist' : 'Added to your watchlist');
+            });
+        }
+
+        /* ---------- Live TV ---------- */
+
+        async function loadChannels() {
+            const { channels, totalViewers } = await api('/channels');
+            state.channels = channels;
+            $('total-viewers').textContent = viewersLabel(totalViewers);
+            if (!state.activeChannelId || !channels.some((c) => c.id === state.activeChannelId)) state.activeChannelId = channels[0]?.id || null;
+            renderLiveChannels();
+            showChannelInfo(state.activeChannelId);
+            updateLiveLock();
+        }
+
+        function renderLiveChannels() {
+            const container = $('channels-grid');
+            container.innerHTML = state.channels.map((ch) => `
+                <div data-id="${esc(ch.id)}" tabindex="0" role="button" class="glass-card rounded-2xl overflow-hidden p-4 cursor-pointer hover:border-brand-cyan focus:border-brand-cyan focus:outline-none transition duration-300 group flex flex-col justify-between" id="channel-card-${esc(ch.id)}">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black text-white bg-slate-900 border border-white/10 px-2.5 py-1 rounded-lg">${esc(ch.logo)}</span>
+                            <span class="flex items-center gap-1 text-[10px] font-black text-brand-redLive bg-brand-redLive/10 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-redLive animate-pulse"></span> LIVE
+                            </span>
+                        </div>
+                        <h4 class="font-extrabold text-white text-sm group-hover:text-brand-cyan transition">${esc(ch.name)}</h4>
+                        <p class="text-xs text-slate-300 line-clamp-1 font-bold">${esc(ch.show)}</p>
+                    </div>
+                    <div class="pt-4 flex items-center justify-between text-[11px] text-slate-400 border-t border-white/5 mt-3">
+                        <span><i data-lucide="eye" class="w-3 h-3 inline text-brand-cyan"></i> ${viewersLabel(ch.viewers)}</span>
+                        <span class="text-brand-cyan font-bold uppercase group-hover:underline">Tune In →</span>
+                    </div>
+                </div>`).join('');
+            container.querySelectorAll('[data-id]').forEach((card) => {
+                const tune = () => tuneChannel(card.dataset.id);
+                card.addEventListener('click', tune);
+                card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tune(); } });
+            });
+            lucide.createIcons();
+        }
+
+        // The guide text is public; only the stream itself needs a login.
+        function showChannelInfo(chId) {
+            const ch = state.channels.find((c) => c.id === chId);
+            if (!ch) return;
+            $('active-channel-name').textContent = ch.name;
+            $('active-channel-badge').textContent = ch.category;
+            $('active-show-title').textContent = ch.show;
+            $('active-show-desc').textContent = ch.description;
+            $('active-program-name').textContent = ch.program;
+            $('active-time-left').textContent = `${ch.minutesLeft}m LEFT`;
+            $('active-progress').style.width = `${ch.progressPercent}%`;
+            $('active-resolution').textContent = ch.resolution;
+            $('active-audio').textContent = ch.audioLanguage;
+            state.channels.forEach((c) => {
+                const card = $(`channel-card-${c.id}`);
+                if (card) ['border-brand-cyan', 'shadow-lg', 'shadow-brand-cyan/20'].forEach((cls) => card.classList.toggle(cls, c.id === chId));
+            });
+        }
+
+        async function loadStream(id, autoplay) {
+            const req = ++state.streamReq;
+            const { streamUrl } = await api(`/channels/${encodeURIComponent(id)}/stream`);
+            if (req !== state.streamReq) return; // a newer request replaced this one
+            $('live-stream-player').src = autoplay ? streamUrl : streamUrl.replace('autoplay=1', 'autoplay=0');
+            $('live-lock').classList.add('hidden');
+        }
+
+        function updateLiveLock() {
+            if (!state.user) {
+                state.streamReq++;
+                $('live-stream-player').src = 'about:blank';
+                $('live-lock').classList.remove('hidden');
+            } else if (state.activeChannelId) {
+                loadStream(state.activeChannelId, false).catch(() => {});
+            }
+        }
+
+        function tuneChannel(id) {
+            guardedCall('watch live channels', async () => {
+                state.activeChannelId = id;
+                showChannelInfo(id);
+                await loadStream(id, true);
+            });
+        }
+
+        $('live-lock-btn').addEventListener('click', () => promptLogin('watch live channels', null));
+
+        /* ---------- Gameplay live ---------- */
+
+        async function loadGameplay() {
+            const { streams, totalViewers } = await api('/gameplay-live');
+            const row = $('gameplay-grid');
+            row.closest('section').classList.toggle('hidden', streams.length === 0);
+            $('gameplay-viewers').textContent = viewersLabel(totalViewers);
+            row.innerHTML = streams.map((s) => `
+                <div data-id="${esc(s.id)}" tabindex="0" role="button" class="group shrink-0 w-72 glass-card rounded-2xl overflow-hidden cursor-pointer hover:border-brand-cyan focus:border-brand-cyan focus:outline-none transition duration-300">
+                    <div class="relative aspect-video bg-slate-800 overflow-hidden">
+                        <img src="${esc(s.thumbnailUrl)}" alt="${esc(s.title)}" class="w-full h-full object-cover brightness-90 group-hover:scale-105 transition duration-500">
+                        <span class="absolute top-3 left-3 flex items-center gap-1 text-[10px] font-black text-white bg-brand-redLive px-2 py-0.5 rounded"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE</span>
+                        <span class="absolute bottom-3 left-3 text-[11px] font-bold text-white bg-black/70 px-2 py-0.5 rounded"><i data-lucide="eye" class="w-3 h-3 inline"></i> ${viewersLabel(s.viewers)}</span>
+                    </div>
+                    <div class="p-4 flex gap-3">
+                        <span class="w-9 h-9 shrink-0 rounded-full bg-brand-cyan text-black flex items-center justify-center font-black">${esc(s.streamer.charAt(0).toUpperCase())}</span>
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-extrabold text-white truncate group-hover:text-brand-cyan transition">${esc(s.title)}</h4>
+                            <p class="text-xs text-slate-400 truncate">${esc(s.streamer)} • ${esc(s.game)}</p>
+                            <p class="text-[10px] font-bold text-brand-cyan uppercase mt-1">${esc(s.language)}</p>
+                        </div>
+                    </div>
+                </div>`).join('');
+            row.querySelectorAll('[data-id]').forEach((card) => {
+                const play = () => playStream(card.dataset.id);
+                card.addEventListener('click', play);
+                card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); } });
+            });
+            lucide.createIcons();
+            refreshScrollButtons('gameplay-grid');
+        }
+
+        function playStream(id) {
+            guardedCall('watch gameplay streams', async () => {
+                const s = await api(`/gameplay-live/${encodeURIComponent(id)}/stream`);
+                openTrailerModal(`${s.streamer} · ${s.game}`, s.streamUrl, 'Live');
+            });
+        }
+
+        /* ---------- Coming soon ---------- */
+
+        const REMIND_OFF = 'mt-2 text-xs text-brand-cyan font-bold flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-brand-cyan transition';
+        const REMIND_ON = 'mt-2 text-xs text-black font-extrabold flex items-center gap-1.5 bg-brand-cyan px-3 py-1.5 rounded-lg shadow-md transition';
+
+        function setRemindBtn(btn, on) {
+            btn.dataset.on = on ? '1' : '0';
+            btn.className = on ? REMIND_ON : REMIND_OFF;
+            btn.innerHTML = on
+                ? `<i data-lucide="check" class="w-3.5 h-3.5"></i> <span>Reminder set</span>`
+                : `<i data-lucide="bell" class="w-3.5 h-3.5"></i> <span>Remind Me</span>`;
+        }
+
+        async function loadComingSoon() {
+            const { comingSoon } = await api('/coming-soon');
+            const grid = $('coming-soon-grid');
+            grid.innerHTML = comingSoon.map((c) => `
+                <div data-id="${c.id}" class="glass-card p-5 rounded-2xl flex gap-4 items-center group">
+                    <img src="${esc(c.imageUrl)}" class="w-28 h-36 object-cover rounded-xl group-hover:scale-105 transition duration-300" alt="${esc(c.title)}">
+                    <div class="space-y-2">
+                        <span class="bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">${esc(c.releaseLabel)}</span>
+                        <h3 class="font-extrabold text-white text-base">${esc(c.title)}</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">${esc(c.description)}</p>
+                        <button type="button" data-remind></button>
+                    </div>
+                </div>`).join('');
+            const byId = Object.fromEntries(comingSoon.map((c) => [String(c.id), c]));
+            grid.querySelectorAll('[data-id]').forEach((card) => {
+                const btn = card.querySelector('[data-remind]');
+                setRemindBtn(btn, byId[card.dataset.id].reminded);
+                btn.addEventListener('click', () => toggleRemind(card.dataset.id, btn));
+            });
+            lucide.createIcons();
+        }
+
+        function toggleRemind(id, btn) {
+            guardedCall('set reminders', async () => {
+                const on = btn.dataset.on === '1';
+                await api(`/coming-soon/${encodeURIComponent(id)}/remind`, { method: on ? 'DELETE' : 'POST' });
+                setRemindBtn(btn, !on);
+                lucide.createIcons();
+                toast(on ? 'Reminder removed' : 'We will remind you at release');
+            });
+        }
+
+        /* ---------- Results modal (search + genre) ---------- */
+
+        function titleCardHTML(t) {
+            return `
+                <button type="button" data-open-title="${esc(t.id)}" class="text-left group rounded-xl overflow-hidden bg-slate-900/70 border border-white/10 hover:border-brand-cyan transition">
+                    <div class="aspect-[3/4] overflow-hidden"><img src="${esc(t.imageUrl)}" alt="${esc(t.title)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>
+                    <div class="p-3">
+                        <h4 class="text-xs font-black text-white uppercase truncate">${esc(t.title)}</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5"><span class="text-amber-400 font-bold">${Number(t.rating).toFixed(1)}</span> • ${esc(t.year)} • ${esc(KINDS[t.kind]?.label || 'Title')}</p>
+                    </div>
+                </button>`;
+        }
+
+        function searchHTML(r) {
+            const block = (label, inner) => `<div><h4 class="text-xs font-black text-brand-cyan uppercase tracking-wider mb-3">${label}</h4>${inner}</div>`;
+            const row = (attr, value, main, sub) => `
+                <button type="button" ${attr}="${esc(value)}" class="w-full text-left flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-slate-900/70 border border-white/10 hover:border-brand-cyan transition">
+                    <span class="text-sm font-bold text-white">${esc(main)}</span><span class="text-[11px] text-slate-400">${esc(sub)}</span>
+                </button>`;
+            const parts = [];
+            if (r.titles.length) parts.push(block('Movies & series', `<div class="grid grid-cols-2 md:grid-cols-4 gap-4">${r.titles.map(titleCardHTML).join('')}</div>`));
+            if (r.channels.length) parts.push(block('Live channels', `<div class="space-y-2">${r.channels.map((c) => row('data-open-channel', c.id, c.name, c.show)).join('')}</div>`));
+            if (r.upcoming.length) parts.push(block('Coming soon', `<div class="space-y-2">${r.upcoming.map((c) => row('data-open-upcoming', c.id, c.title, c.releaseLabel)).join('')}</div>`));
+            if (r.streams.length) parts.push(block('Gameplay live', `<div class="space-y-2">${r.streams.map((s) => row('data-open-stream', s.id, `${s.streamer} · ${s.game}`, s.title)).join('')}</div>`));
+            if (r.genres.length) parts.push(block('Genres', `<div class="space-y-2">${r.genres.map((g) => row('data-open-genre', g.slug, g.name, 'Browse')).join('')}</div>`));
+            return parts.length ? parts.join('') : `<p class="text-sm text-slate-400">Nothing matched. Try a title, a channel or a genre.</p>`;
+        }
+
+        function showResults(title, html) {
+            $('results-title').textContent = title;
+            $('results-body').innerHTML = html;
+            $('results-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeResults() { $('results-modal').classList.add('hidden'); }
+
+        $('results-close').addEventListener('click', closeResults);
+        $('results-modal').addEventListener('click', (e) => { if (e.target === $('results-modal')) closeResults(); });
+        $('results-body').addEventListener('click', (e) => {
+            const title = e.target.closest('[data-open-title]');
+            const channel = e.target.closest('[data-open-channel]');
+            const upcoming = e.target.closest('[data-open-upcoming]');
+            const genre = e.target.closest('[data-open-genre]');
+            const stream = e.target.closest('[data-open-stream]');
+            if (title) openTitleTrailer(title.dataset.openTitle);
+            else if (stream) playStream(stream.dataset.openStream);
+            else if (channel) { closeResults(); document.getElementById('live-tv').scrollIntoView({ behavior: 'smooth' }); tuneChannel(channel.dataset.openChannel); }
+            else if (upcoming) { closeResults(); document.getElementById('coming-soon').scrollIntoView({ behavior: 'smooth' }); }
+            else if (genre) openGenre(genre.dataset.openGenre);
+        });
+
+        /* ---------- Search ---------- */
+
+        const searchInput = $('search-input');
+        function runSearch(q) {
+            q = q.trim();
+            if (q.length < 2) return;
+            guardedCall('search the catalog', async () => {
+                const r = await api('/search?q=' + encodeURIComponent(q));
+                showResults(`Results for “${q}”`, searchHTML(r));
+            });
+        }
+        searchInput.addEventListener('focus', () => {
+            if (!state.user) { searchInput.blur(); promptLogin('search the catalog', () => searchInput.focus()); }
+        });
+        searchInput.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => runSearch(searchInput.value), 400); });
+        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(searchTimer); runSearch(searchInput.value); } });
+
+        /* ---------- Trailer modal ---------- */
+
+        function withAutoplay(url) {
+            try { const u = new URL(url); u.searchParams.set('autoplay', '1'); return u.toString(); } catch { return url; }
+        }
+        function openTrailerModal(title, url, label = 'Official Trailer') {
+            $('trailer-modal-title').textContent = `${title} - ${label}`;
+            $('trailer-iframe').src = withAutoplay(url);
+            $('trailer-modal').classList.remove('hidden');
+        }
+        function closeTrailerModal() {
+            $('trailer-modal').classList.add('hidden');
+            $('trailer-iframe').src = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            if (!$('auth-modal').classList.contains('hidden')) closeAuthModal();
+            else if (!$('trailer-modal').classList.contains('hidden')) closeTrailerModal();
+            else closeResults();
+        });
+
+        /* ---------- Boot ---------- */
+
+        window.onload = async function () {
+            await restoreSession();
+            renderAuthSlot();
+            const loaders = [loadHero, loadGenres, loadRows, loadChannels, loadGameplay, loadComingSoon];
+            const results = await Promise.allSettled(loaders.map((fn) => fn()));
+            if (results.some((r) => r.status === 'rejected')) toast('Some content could not be loaded. Is the API running?');
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
